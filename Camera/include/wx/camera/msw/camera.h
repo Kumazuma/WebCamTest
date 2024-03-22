@@ -23,6 +23,7 @@ private:
 	wxCameraMode m_currentMode;
 	IMFMediaSource* m_pMediaSource;
 	IMFSourceReader* m_pReader;
+	IMFAttributes* m_pAttributes;
 	Listener* m_listener;
 	wxEvtHandler* m_win;
 };

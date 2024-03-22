@@ -209,21 +209,19 @@ bool wxCameraImplMSW::StartCapture(wxEvtHandler* win, const wxCameraMode& mode, 
 		return false;
 
 	IMFSourceReader* pNewReader;
-	IMFAttributes* pAttributes;
-	MFCreateAttributes(&pAttributes, 1);
+	MFCreateAttributes(&m_pAttributes, 1);
 	Listener* listener = new Listener(this);
 
-	pAttributes->SetUnknown(MF_SOURCE_READER_ASYNC_CALLBACK, listener);
-	MFCreateSourceReaderFromMediaSource(m_pMediaSource, pAttributes, &pNewReader);
+	m_pAttributes->SetUnknown(MF_SOURCE_READER_ASYNC_CALLBACK, listener);
+	MFCreateSourceReaderFromMediaSource(m_pMediaSource, m_pAttributes, &pNewReader);
 	if (pNewReader == nullptr)
 	{
 		listener->Release();
-		pAttributes->Release();
+		m_pAttributes->Release();
 		return false;
 	}
 
 	m_win = win;
-	pAttributes->Release();
 	m_listener = listener;
 	m_pReader = pNewReader;
 	m_currentMode = mode;
@@ -235,15 +233,15 @@ void wxCameraImplMSW::StopCapture() {
 	if (m_listener == nullptr)
 		return;
 
-	m_pReader->Flush(MF_SOURCE_READER_ANY_STREAM);
-	m_pReader->Release();
-	m_pReader = nullptr;
-	m_pMediaSource->Release();
-	
+	m_pReader->Flush(MF_SOURCE_READER_FIRST_VIDEO_STREAM);
 	m_listener->m_mutex.lock();
 	m_listener->m_impl = nullptr;
 	m_listener->m_mutex.unlock();
 
+	m_pReader->Release();
+	m_pReader = nullptr;
+	m_pMediaSource->Release();
+	m_pAttributes->Release();
 	m_win = nullptr;
 	m_listener->Release();
 	m_listener = nullptr;
@@ -369,6 +367,7 @@ HRESULT wxCameraImplMSW::Listener::QueryInterface(const IID& riid, void** ppvObj
 		return E_NOINTERFACE;
 	}
 
+	AddRef();
 	return S_OK;
 }
 
@@ -421,10 +420,10 @@ HRESULT wxCameraImplMSW::Listener::OnReadSample(HRESULT hrStatus, DWORD dwStream
 		DWORD len;
 		pBuffer->GetCurrentLength(&len);
 		pBuffer->Lock(&ptr, nullptr, nullptr);
-		wxCameraEvent event{ wxEVT_CAMERA_SAMPLE_RECEIVED, m_impl->m_id, ptr, len };
+		wxCameraEvent* event = new wxCameraEvent{ wxEVT_CAMERA_SAMPLE_RECEIVED, m_impl->m_id, ptr, len };
 		pBuffer->Unlock();
 		pBuffer->Release();
-		m_impl->m_win->SafelyProcessEvent(event);
+		m_impl->m_win->QueueEvent(event);
 	}
 
 	m_impl->m_pReader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, nullptr, nullptr, nullptr, nullptr);
