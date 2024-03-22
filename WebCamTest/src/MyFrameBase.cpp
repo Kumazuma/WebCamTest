@@ -46,6 +46,9 @@ bool MyFrameBase::Create(wxWindow* parent, wxWindowID id, const wxString& title,
 
     box_sizer->Add(static_box2, wxSizerFlags().Expand().Border(wxALL));
 
+    tglRead_ = new wxToggleButton(this, ID_TGL_READ, "Read");
+    box_sizer->Add(tglRead_, wxSizerFlags().Expand().Border(wxALL));
+
     m_panel = new CanvasPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     box_sizer->Add(m_panel, wxSizerFlags(1).Expand().Border(wxALL));
     SetSizerAndFit(box_sizer);

@@ -40,6 +40,12 @@
             flags="wxEXPAND" />
         </node>
         <node
+          class="wxToggleButton"
+          label="Read"
+          var_name="tglRead_"
+          id="ID_TGL_READ"
+          flags="wxEXPAND" />
+        <node
           class="wxPanel"
           class_access="protected:"
           var_name="m_panel"

@@ -4,16 +4,22 @@
 #pragma once
 
 #include <wx/wx.h>
+#include <wx/camera/camera.h>
 
 class MyFrameBase;
+struct wxCameraMode;
 class WebCamTestApp: public wxApp {
+	DECLARE_EVENT_TABLE();
 public:
 	bool OnInit() override;
 
 protected:
 	void OnChoiceDeviceSelectionChanged(wxCommandEvent& evt);
+	void OnTglReadClicked(wxCommandEvent& evt);
 
 	MyFrameBase* m_frame;
+	wxCamera m_camera;
+	wxVector<wxCameraMode> m_modes;
 };
 
 wxDECLARE_APP(WebCamTestApp);

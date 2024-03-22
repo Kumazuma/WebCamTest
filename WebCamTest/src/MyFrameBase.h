@@ -15,6 +15,7 @@
 #include <wx/menu.h>
 #include <wx/panel.h>
 #include <wx/statusbr.h>
+#include <wx/tglbtn.h>
 #include <wx/toolbar.h>
 
 class CanvasPanel;
@@ -25,7 +26,8 @@ public:
     enum
     {
         ID_CHOICE_DEVICE = wxID_HIGHEST + 1,
-        ID_CHOICE_MODE
+        ID_CHOICE_MODE,
+        ID_TGL_READ
     };
 
     MyFrameBase() {}
@@ -49,6 +51,7 @@ protected:
     wxChoice* choiceMode_;
     wxMenuBar* m_menubar;
     wxStatusBar* m_statusBar;
+    wxToggleButton* tglRead_;
     wxToolBar* m_toolBar;
 };
 

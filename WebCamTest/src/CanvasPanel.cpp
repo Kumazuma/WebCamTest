@@ -11,5 +11,5 @@ bool CanvasPanel::Create(wxWindow* parent, wxWindowID winid, const wxPoint& pos,
 		return false;
 	}
 
-	return false;
+	return true;
 }
